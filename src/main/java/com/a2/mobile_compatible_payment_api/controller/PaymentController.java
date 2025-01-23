@@ -7,6 +7,7 @@ import com.a2.mobile_compatible_payment_api.model.GenericResponseEntity;
 import com.a2.mobile_compatible_payment_api.service.PaymentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,6 +21,7 @@ public class PaymentController {
     final private PaymentService paymentService;
 
 
+    @PostMapping(value = "initiate")
     GenericResponseEntity<BasePaymentInitializeResponse> paymentInitialize(@Valid @RequestBody PaymentInitializeRequest request) {
         return GenericResponseEntity.successWithData(paymentService.paymentInitialize(request), StringConstant.paymentInitializeSuccess);
     }

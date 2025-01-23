@@ -57,7 +57,7 @@ public class PaymentService {
                 defaultMerchantGet.getEsewaClientSecret(),
                 transaction.getId().toString(),
                 transaction.getAmountInRs(),
-                defaultMerchantGet.getWebsiteUrl(),
+                defaultMerchantGet.getWebsiteUrl()
         );
 
 

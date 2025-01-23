@@ -51,6 +51,9 @@ public class MerchantKeys {
     private String khaltiPublic;
 
     @NotNull
+    private String returnUrl;
+
+    @NotNull
     private Boolean isDefault;
 
 

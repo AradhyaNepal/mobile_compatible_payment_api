@@ -46,9 +46,13 @@ public class Transaction {
     private  MyUsers user;
 
     private Instant verifiedDate;
+    @Column(columnDefinition = "TEXT")
     private String vendorInitRequest;
+    @Column(columnDefinition = "TEXT")
     private String vendorInitResponse;
+    @Column(columnDefinition = "TEXT")
     private String vendorVerifyRequest;
+    @Column(columnDefinition = "TEXT")
     private String vendorVerifyResponse;
 
 

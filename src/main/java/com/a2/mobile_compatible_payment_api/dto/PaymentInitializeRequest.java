@@ -12,7 +12,6 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 public class PaymentInitializeRequest {
-    @NotEmpty(message = StringConstant.paymentVendorRequired)
     private PaymentVendor paymentVendor;
 
     @NotEmpty(message = StringConstant.membershipIdRequired)

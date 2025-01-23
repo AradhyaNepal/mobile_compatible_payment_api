@@ -69,7 +69,7 @@ public class PaymentService {
             throw new CustomException(StringConstant.noTransactionFound);
         }
         var transactionGet = transaction.get();
-        transactionGet.setVendorInitRequest("https://rc.esewa.com.np/mobile/transaction?productId=" + request.getTransactionId() + "&amount=" + transactionGet.getAmountInRs());
+        transactionGet.setVendorVerifyRequest("https://rc.esewa.com.np/mobile/transaction?productId=" + request.getTransactionId() + "&amount=" + transactionGet.getAmountInRs());
         transactionGet.setVendorVerifyResponse("[\n" +
                 "    {\n" +
                 "        \"productId\": \"" + request.getTransactionId() + "\",\n" +
@@ -111,10 +111,10 @@ public class PaymentService {
     public List<MembershipResponse> getAllMembership() {
         return membershipRepository.findAll().stream().map(
                 e -> MembershipResponse.builder()
-                        .membershipName(e.getMembershipName())
-                        .membershipAmount(e.getMembershipBenefits())
+                        .membershipAmount(e.getMembershipAmountRs())
                         .membershipCode(e.getMembershipCode())
                         .membershipName(e.getMembershipName())
+                        .membershipBenefits(e.getMembershipBenefits())
                         .build()
         ).toList();
     }

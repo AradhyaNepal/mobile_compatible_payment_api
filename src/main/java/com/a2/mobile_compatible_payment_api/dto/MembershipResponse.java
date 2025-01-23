@@ -8,6 +8,6 @@ import lombok.Getter;
 public class MembershipResponse {
     private String membershipCode;
     private String membershipName;
-    private String membershipAmount;
+    private Double membershipAmount;
     private String membershipBenefits;
 }

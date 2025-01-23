@@ -23,7 +23,7 @@ public class PremiumResourcesController {
 
 
     @GetMapping()
-    GenericResponseEntity<String> premiumContent(@Valid @RequestBody PaymentInitializeRequest request) throws CustomException {
+    GenericResponseEntity<String> premiumContent() throws CustomException {
         return GenericResponseEntity.successWithData(paymentService.getPremiumContent(), StringConstant.premiumContentFetched);
     }
 

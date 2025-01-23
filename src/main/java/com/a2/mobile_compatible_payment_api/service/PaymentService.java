@@ -5,6 +5,7 @@ import com.a2.mobile_compatible_payment_api.constant.enums.PaymentStatus;
 import com.a2.mobile_compatible_payment_api.dto.BasePaymentInitializeResponse;
 import com.a2.mobile_compatible_payment_api.dto.EsewaInitializeResponse;
 import com.a2.mobile_compatible_payment_api.dto.PaymentInitializeRequest;
+import com.a2.mobile_compatible_payment_api.dto.PaymentVerifyRequest;
 import com.a2.mobile_compatible_payment_api.entity.Transaction;
 import com.a2.mobile_compatible_payment_api.model.CustomException;
 import com.a2.mobile_compatible_payment_api.repository.MembershipRepository;
@@ -13,6 +14,9 @@ import com.a2.mobile_compatible_payment_api.repository.TransactionRepository;
 import com.a2.mobile_compatible_payment_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
+import java.util.UUID;
 
 @Service
 @AllArgsConstructor
@@ -42,6 +46,7 @@ public class PaymentService {
         var transaction = transactionRepository.save(Transaction.builder()
                 .paymentVendor(request.getPaymentVendor())
                 .paymentStatus(PaymentStatus.initial)
+                .initiatedDate(Instant.now())
                 .amountInRs(membershipGet.getMembershipAmountRs())
                 .purposeRemark("Membership " + membershipGet.getMembershipCode() + " Payment with merchant " + defaultMerchantGet.getMerchantEmail())
                 .user(dummyUser.get())
@@ -54,6 +59,37 @@ public class PaymentService {
                 transaction.getAmountInRs()
         );
 
+
+    }
+
+    public void verifyPayment(PaymentVerifyRequest request) throws CustomException {
+        var transaction = transactionRepository.findById(UUID.fromString(request.getTransactionId()));
+        if (transaction.isEmpty()) {
+            throw new CustomException(StringConstant.noTransactionFound);
+        }
+        var transactionGet = transaction.get();
+        transactionGet.setVendorInitRequest("https://rc.esewa.com.np/mobile/transaction?productId=" + request.getTransactionId() + "&amount=" + transactionGet.getAmountInRs());
+        transactionGet.setVendorVerifyResponse("[\n" +
+                "    {\n" +
+                "        \"productId\": \"" + request.getTransactionId() + "\",\n" +
+                "        \"productName\": \"Android SDK Payment\",\n" +
+                "        \"totalAmount\": \"" + transactionGet.getAmountInRs() + "\",\n" +
+                "        \"code\": \"00\",\n" +
+                "        \"message\": {\n" +
+                "            \"technicalSuccessMessage\": \"Your transaction has been completed.\",\n" +
+                "            \"successMessage\": \"Your transaction has been completed.\"\n" +
+                "        },\n" +
+                "        \"transactionDetails\": {\n" +
+                "            \"date\": \"Mon Dec You will get current Date here NPT 2022\",\n" +
+                "            \"referenceId\": \"" + request.getVendorPaymentId() + "\",\n" +
+                "            \"status\": \"COMPLETE\"\n" +
+                "        },\n" +
+                "        \"merchantName\": \"Android SDK Payment\"\n" +
+                "    }\n" +
+                "] ");
+        transactionGet.setPaymentStatus(PaymentStatus.success);
+        transactionGet.setVerifiedDate(Instant.now());
+        transactionRepository.save(transactionGet);
 
     }
 }

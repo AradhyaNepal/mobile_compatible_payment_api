@@ -18,7 +18,7 @@ import java.time.Instant;
 public class Membership {
     @Id
     @GeneratedValue
-    private int id;
+    private Integer id;
 
 
     @Column(unique = true, nullable = false)
@@ -31,7 +31,7 @@ public class Membership {
     private String membershipBenefits;
 
     @NotNull
-    private Integer membershipAmount;
+    private Double membershipAmountRs;
 
 
 }

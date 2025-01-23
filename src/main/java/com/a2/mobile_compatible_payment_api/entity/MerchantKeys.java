@@ -28,6 +28,10 @@ public class MerchantKeys {
 
 
     @NotNull
+    private String merchantEmail;
+
+
+    @NotNull
     private String esewaSecretKey;
 
 
@@ -44,7 +48,7 @@ public class MerchantKeys {
     private String khaltiPublic;
 
     @NotNull
-    private  Boolean isDefault;
+    private Boolean isDefault;
 
 
 }

@@ -25,9 +25,11 @@ public class Transaction {
     private UUID id;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private PaymentVendor paymentVendor;
 
     @NotNull
+    @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;
 
     @NotNull
@@ -39,11 +41,18 @@ public class Transaction {
     @NotNull
     private String purposeRemark;
 
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private  MyUsers user;
+
     private Instant verifiedDate;
     private String vendorInitRequest;
     private String vendorInitResponse;
     private String vendorVerifyRequest;
     private String vendorVerifyResponse;
+
+
+
 
 
 }

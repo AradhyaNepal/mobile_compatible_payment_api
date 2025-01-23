@@ -2,10 +2,8 @@ package com.a2.mobile_compatible_payment_api.service;
 
 import com.a2.mobile_compatible_payment_api.constant.StringConstant;
 import com.a2.mobile_compatible_payment_api.constant.enums.PaymentStatus;
-import com.a2.mobile_compatible_payment_api.dto.BasePaymentInitializeResponse;
-import com.a2.mobile_compatible_payment_api.dto.EsewaInitializeResponse;
-import com.a2.mobile_compatible_payment_api.dto.PaymentInitializeRequest;
-import com.a2.mobile_compatible_payment_api.dto.PaymentVerifyRequest;
+import com.a2.mobile_compatible_payment_api.dto.*;
+import com.a2.mobile_compatible_payment_api.entity.Membership;
 import com.a2.mobile_compatible_payment_api.entity.Transaction;
 import com.a2.mobile_compatible_payment_api.model.CustomException;
 import com.a2.mobile_compatible_payment_api.repository.MembershipRepository;
@@ -13,9 +11,11 @@ import com.a2.mobile_compatible_payment_api.repository.MerchantKeysRepository;
 import com.a2.mobile_compatible_payment_api.repository.TransactionRepository;
 import com.a2.mobile_compatible_payment_api.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -90,6 +90,31 @@ public class PaymentService {
         transactionGet.setPaymentStatus(PaymentStatus.success);
         transactionGet.setVerifiedDate(Instant.now());
         transactionRepository.save(transactionGet);
+        var user = transactionGet.getUser();
+        user.setPremium(true);
+        userRepository.save(user);
 
+    }
+
+    public String getPremiumContent() throws CustomException {
+        var dummyUser = userRepository.findById(1);
+        if (dummyUser.isEmpty()) {
+            throw new CustomException(StringConstant.noUserFound);
+        }
+        if (!dummyUser.get().isPremium()) {
+            throw new CustomException(StringConstant.youAreNotPremiumUser, HttpStatus.FORBIDDEN);
+        }
+        return "This is very premium content which you are viewing since you have paid the membership";
+    }
+
+    public List<MembershipResponse> getAllMembership() {
+        return membershipRepository.findAll().stream().map(
+                e -> MembershipResponse.builder()
+                        .membershipName(e.getMembershipName())
+                        .membershipAmount(e.getMembershipBenefits())
+                        .membershipCode(e.getMembershipCode())
+                        .membershipName(e.getMembershipName())
+                        .build()
+        ).toList();
     }
 }

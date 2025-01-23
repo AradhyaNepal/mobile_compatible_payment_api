@@ -34,6 +34,9 @@ public class MerchantKeys {
     @NotNull
     private String esewaSecretKey;
 
+    @NotNull
+    private String esewaClientSecret;
+
 
     @NotNull
     private String esewaClientId;

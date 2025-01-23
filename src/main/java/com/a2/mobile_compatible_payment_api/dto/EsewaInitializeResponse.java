@@ -7,7 +7,7 @@ public class EsewaInitializeResponse extends BasePaymentInitializeResponse {
     final private String clientId;
     final private String clientSecret;
 
-    EsewaInitializeResponse(String clientId, String clientSecret, String transactionId, Double amountRs) {
+    public EsewaInitializeResponse(String clientId, String clientSecret, String transactionId, Double amountRs) {
         super(transactionId, amountRs);
         this.clientId = clientId;
         this.clientSecret = clientSecret;

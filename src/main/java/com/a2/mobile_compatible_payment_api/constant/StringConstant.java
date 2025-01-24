@@ -13,4 +13,5 @@ public class StringConstant {
     public static String verifyPaymentSuccess = "Membership successfully bought";
     public static String noTransactionFound = "No Transaction Found";
     public static String youAreNotPremiumUser = "You are not premium user to access this resources. Please buy membership.";
+    public static String userAlreadyPremium="User already premium";
 }

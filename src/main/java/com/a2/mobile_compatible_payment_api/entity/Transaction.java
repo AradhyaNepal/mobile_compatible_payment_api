@@ -28,6 +28,11 @@ public class Transaction {
     @Enumerated(EnumType.STRING)
     private PaymentVendor paymentVendor;
 
+
+
+
+    private String paymentVendorId;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     private PaymentStatus paymentStatus;

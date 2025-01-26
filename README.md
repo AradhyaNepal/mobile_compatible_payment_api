@@ -33,9 +33,9 @@ Although the demo payment vendor are only Nepal available vendors, and the backe
 **the documentation is independent of backend and of which vendor you are using.**
 
 ### Youtubes and Figmas
-You can also watch my YouTube Video to get better understanding of the Flow: (YouTube)[https://youtu.be/u1_ZjulSx-w]
+You can also watch my YouTube Video to get better understanding of the Flow: [YouTube](https://youtu.be/u1_ZjulSx-w)
 
-Or You can watch this Figma Design: (Figma)[https://www.figma.com/design/P99aIfSQetM3a7ZjtcH20O/MyPersonal?node-id=2-1261&t=fOTkI1MrPcUb0haR-1]
+Or You can watch this Figma Design: [Figma](https://www.figma.com/design/P99aIfSQetM3a7ZjtcH20O/MyPersonal?node-id=2-1261&t=fOTkI1MrPcUb0haR-1)
 
 ### Scenario 1: Mobile SDK Available.
 Always try to use SDK over showing web on mobile.

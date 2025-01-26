@@ -1,6 +1,8 @@
 This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API.
 ![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
 ![image](https://github.com/user-attachments/assets/f444973b-f0da-47a9-93ea-9b2c6e5c5f51)
+![image](https://github.com/user-attachments/assets/69ef3dcd-2cbf-413e-8ebc-bca0961f318f)
+
 
 Available Vendors:
 
@@ -17,6 +19,7 @@ Initiate Khalti Response (Have Mobile SDK):
 Initiate ConnectIPS Response (No Mobile SDK):
 
 ![image](https://github.com/user-attachments/assets/f340d575-b11c-4e90-82b9-e12d796db44a)
+
 
 For this documentation I have used three payment vendor as example; Esewa, Khalti and ConnectIPS.
 Esewa and Khalti are payment vendor which have Mobile SDK available, but ConnectIPS sadly don't have,
@@ -155,11 +158,43 @@ Response:
   "message": "Membership successfully bought"
 }
 
+ConnectIPS:
+ConnectIPS is a payment vendor which have provided no Mobile SDK, and it is really sad, it makes mobile unstable because for this payment vendor we need to show web content inside mobile.
+In scenarios like this Mobile developer always fight to get API where:
+1) Backend provides an HTML content, or an url. This content needs to be opened in integrated web browser inside users mobile app, so backend provided content must have enough javascript which handles all the payment business logic. If backend is asking mobile to do any extra logics, reject it.
+2) The problem with opening integrated web browser inside users mobile app is that app will loose control over the user's navigation, user can watch Youtube, Facebook on the website after payment get completed and never comes back. So backend must provide successUrl and failureUrl so that Mobile will know then if user gets redirected to this url in the web then it means the task of opening web is completed and now mobile need to close the web and get its control back.
 
 
 
+With this rule in mind here:
+Initiate
+Request:
+{
+  "paymentVendor": "connectIPS",
+  "membershipCode": "uni"
+}
+Response:
+{
+  "data": {
+    "paymentWebHTML": "HTML content with enough javascript so that mobile team task is just to render this HTML inside mobile and listen for successURL and errorURL. No business logic in Mobile.",
+    "successURL": "http:www.uat-connectips.com/success",
+    "transactionId": "57aa3d9c-7028-4b55-b85a-6cdc47eaa314",
+    "errorURL": "http:www.uat-connectips.com/error",
+    "transactionAmountRs": 10000
+  },
+  "message": "Successfully initialized Payment"
+}
 
-
+Once the mobile catches that user is being navigated to successURL, they will extract the params of connectIPS transaction ID from the successURL to which connectIPS redirect and then they will hit the verify API to save the transaction done information in our server. Same like Esewa and Khalti Backend must do cross check, save logs of third party verify request-response, and make user premium.
+Request:
+{
+  "transactionId": "57aa3d9c-7028-4b55-b85a-6cdc47eaa314",
+  "vendorPaymentId": "230948230948"
+}
+Response:
+{
+  "message": "Membership successfully bought"
+}
 
 
 

@@ -50,7 +50,7 @@ What to do is simple:
 
 **Do not read web documentation for Mobile, because mobile is not web.**
 
-#### Esewa
+## Esewa
 For Esewa, mobile needs clientId, clientSecretId, productId, productName and productPrice.
 
 You can watch it in this documentation [Esewa Offical Docs](https://developer.esewa.com.np/pages/Flutter#overview)
@@ -127,7 +127,7 @@ Sending back mobile team success status code so that they can show user proper s
 - If Esewa says success, backend must automatically make user premium, backend must not ask mobile to call an another API to verify from esewa, and another API to make user premium.
 - In entire process Backend must save log of Esewa request and response when they where verifying. Third party API are always prone to change there protocol or send unknown issue, keeping track saves developers sleep when something unexpected happens.
 
-#### Khalti
+## Khalti
 Khalti is also payment vendor which provides mobile SDK. Just few difference for developers to know is the pidx, 
 which is a unique id needed for mobile SDK. 
 
@@ -201,7 +201,7 @@ and save log of third party verify request and response for future ease if unexp
 ```
 
 ### Scenario 2: Sadly no Mobile SDK Available, need to use Web.
-#### ConnectIPS:
+## ConnectIPS:
 ConnectIPS is a payment vendor which have provided no Mobile SDK, and it is really sad, it makes mobile unstable because for this payment vendor we need to show web content inside mobile.
 
 In scenarios like this Mobile developer always fight to get API where:

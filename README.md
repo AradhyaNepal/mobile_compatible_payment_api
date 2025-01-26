@@ -1,4 +1,6 @@
 This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API.
+![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
+
 
 For this documentation I have used three payment vendor as example; Esewa, Khalti and ConnectIPS.
 Esewa and Khalti are payment vendor which have Mobile SDK available, but ConnectIPS sadly don't have,
@@ -55,7 +57,7 @@ Points to note:
 - Since Esewa is third party server, sometimes they might not be available, backend must either provide dynamic list of available vendor, and in init throw exception if unavailable vendor is used.
 -  Never make Mobile Team to hard code clientId and clientSecret in there code. It must dynamically come from backend. Even backend must not hardcode it in there code, they must either use .env or use database to store.
 - Never make Mobile Team to generate TrasactionId. Because payment is not just about doing the payment, its also about having track of the payment. Sometimes user might have initiated, done payment, but in the middle our server was down, in this case user amount might get deducted but user's transaction for which he/she had done payment in our system might not get done. Storing transaction ID in backend helps customer support to help customers. Also it helps to track hackers, who suddenly become premium user in the system but there is not transaction details in our system. Payment is big deal do not take it easily.
-- If you are calling any third party API to initiate, like of Esewa, also save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
+- If you are calling any third party API to initiate, also save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
 
 User doing the payment
 From this initiate response, mobile team will open Esewa SDK on Mobile. Esewa SDK will handle all the complex logic needed to do the payment.
@@ -82,6 +84,60 @@ Point to note:
 - When it comes to data consistency and security backend should never trust frontend team. Backend must do cross check from Esewa server whether the user is fraud or not. For that backend will use the vendorPaymentId(i.e RefId in case of Esewa), and using the secretKey hit the Esewa verify API.
 - If Esewa says success, backend must automatically make user premium, backend must not ask mobile to call an another API to verify from esewa, and another API to make user premium.
 - In entire process Backend must save log of Esewa request and response when they where verifying. Third party API are always prone to change there protocol or send unknown issue, keeping track saves developers sleep when something unexpected happens.
+
+**Khalti**
+Khalti is also payment vendor which provides mobile SDK. Just few difference for developers to know is the pidx, 
+which is a unique id needed for mobile SDK. But this id must be generated in initiate API, where backend need to call
+Khalti API whose compulsory fields are: return_url, website_url, amount, purchase_order_id and purchase_order_name.
+For return_url, backend must create a static web template which is made of HTML and hosted on backend's specific web url,
+or they must ask web developers to make a url.
+
+purchase_order_id is unique transaction id in our system.
+In response you will receive pidx.
+ {
+        "pidx": "bZQLD9wRVWo4CdESSfuSsB",
+        "payment_url": "https://test-pay.khalti.com/?pidx=bZQLD9wRVWo4CdESSfuSsB",
+        "expires_at": "2023-05-25T16:26:16.471649+05:45",
+        "expires_in": 1800
+  }
+
+  For better up to date documentation read https://docs.khalti.com/khalti-epayment/
+
+Coming back to API which mobile SDK consume first is initiate,
+Request
+{
+  "paymentVendor": "khalti",
+  "membershipCode": "uni"
+}
+Response:
+{
+  "data": {
+    "pidx": "bZQLD9wRVWo4CdESSfuSsB",
+    "publicKey": "bZQLD9wRVWo4CdESSfuSsB",
+    "transactionId": "8a367c31-1bc2-4b86-8a0b-e7d3ebc40d81",
+    "transactionAmountRs": 10000
+  },
+  "message": "Successfully initialized Payment"
+}
+
+Khalti SDK needs pidx and public Key to initiate the payment in Khalti SDK.
+In my flow Mobile needs to save transactionId so that they can use it when they are verifying,
+thats why I am sending it even Khalti SDK don't require it. Since we have passed PIDX, internally Khalti SDK can fetch the transactionId.
+
+- Since you are calling third party API to initiate, save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
+
+verify/
+Everything same as esewa, Mobile will call verify once everything is done. And in backend you will do cross check, make user premium; 
+and save log of third party verify request and response for future ease if unexpected happens.
+Request
+{
+  "transactionId": "8a367c31-1bc2-4b86-8a0b-e7d3ebc40d81",
+  "vendorPaymentId": "bZQLD9wRVWo4CdESSfuSsB"
+}
+Response:
+{
+  "message": "Membership successfully bought"
+}
 
 
 

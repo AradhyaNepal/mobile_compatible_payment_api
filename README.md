@@ -1,6 +1,22 @@
 This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API.
 ![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
+![image](https://github.com/user-attachments/assets/f444973b-f0da-47a9-93ea-9b2c6e5c5f51)
 
+Available Vendors:
+
+![image](https://github.com/user-attachments/assets/ea0ff055-2476-4119-b720-ef9630c89a5c)
+
+Initiate Esewa Response (Have Mobile SDK):
+
+![image](https://github.com/user-attachments/assets/252d9fed-6cca-44db-9474-5bef01536836)
+
+Initiate Khalti Response (Have Mobile SDK):
+
+![image](https://github.com/user-attachments/assets/44c0912d-e842-4144-90d9-b06dff74aab5)
+
+Initiate ConnectIPS Response (No Mobile SDK):
+
+![image](https://github.com/user-attachments/assets/f340d575-b11c-4e90-82b9-e12d796db44a)
 
 For this documentation I have used three payment vendor as example; Esewa, Khalti and ConnectIPS.
 Esewa and Khalti are payment vendor which have Mobile SDK available, but ConnectIPS sadly don't have,

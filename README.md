@@ -1,61 +1,71 @@
-This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API.
+### This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API
+
 ![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
 ![image](https://github.com/user-attachments/assets/f444973b-f0da-47a9-93ea-9b2c6e5c5f51)
 ![image](https://github.com/user-attachments/assets/69ef3dcd-2cbf-413e-8ebc-bca0961f318f)
 
 
-Available Vendors:
+### Available Vendors:
 
 ![image](https://github.com/user-attachments/assets/ea0ff055-2476-4119-b720-ef9630c89a5c)
 
-Initiate Esewa Response (Have Mobile SDK):
+### Initiate Esewa Response (Have Mobile SDK):
 
 ![image](https://github.com/user-attachments/assets/252d9fed-6cca-44db-9474-5bef01536836)
 
-Initiate Khalti Response (Have Mobile SDK):
+### Initiate Khalti Response (Have Mobile SDK):
 
 ![image](https://github.com/user-attachments/assets/44c0912d-e842-4144-90d9-b06dff74aab5)
 
-Initiate ConnectIPS Response (No Mobile SDK):
+### Initiate ConnectIPS Response (No Mobile SDK):
 
 ![image](https://github.com/user-attachments/assets/f340d575-b11c-4e90-82b9-e12d796db44a)
 
-
+### Intro
 For this documentation I have used three payment vendor as example; Esewa, Khalti and ConnectIPS.
+
 Esewa and Khalti are payment vendor which have Mobile SDK available, but ConnectIPS sadly don't have,
 so these three serve a perfect example how to make API on different scenarios.
 
 Although the demo payment vendor are only Nepal available vendors, and the backend to make dummy API is Spring boot,
-the documentation is independent of these two factors.
+**the documentation is independent of backend and of which vendor you are using.**
 
+### Youtubes and Figmas
 You can also watch my YouTube Video to get better understanding of the Flow:
 Or You can watch this Figma Design:
 
-
-**Scenario 1: Payment SDK Available.**
+### Scenario 1: Mobile SDK Available.
 Always try to use SDK over showing web on mobile.
+
 Showing web makes mobile unstable, its like what happens when there is lots of male harmone in inside female body. It causes issues.
-Example used are Esewa and Khalti.
-First read the mobile sdk documentation which ever payment vendor you are integrating.
+
+In Esewa and Khalti there are payment Vendor available, Scenario 1 explains what to do in these scenario.
+
+What to do is simple: **Read the mobile sdk documentation about which payment vendor you are integrating,
+do not read web documentation for Mobile, because mobile is not web.**
 
 **Esewa**
 For Esewa, mobile needs clientId, clientSecretId, productId, productName and productPrice.
-You can watch it in this documentation https://developer.esewa.com.np/pages/Flutter#overview
 
-Initially there is iniate API:
-/initiate : 
+You can watch it in this documentation [Esewa Offical Docs](https://developer.esewa.com.np/pages/Flutter#overview)
+
+**Initially there is initiate API:**
 Request:
+```
 {
   "paymentVendor": "esewa",
   "membershipCode": "uni"
 }
+```
 
-This iniate API works for Esewa, Khalti and ConnectIPS.
-So in paymentVendor its asking from where user want to do payment.
-MembershipCode is unique to my application's business logic, its about for what user is doing payment.
-If there is only one thing for which user can do payment in that specific API no need to ask it, same with payment vendor.
+This same initiate API is used to initiate for Esewa, Khalti and ConnectIPS. So in paymentVendor its asking from where user want to do payment.
+
+MembershipCode is unique to my application's business logic, its about for what purpose user is doing payment.
+
+If in your system there is only one thing and only one source for/from which user can do payment, then no need to ask paymentVendor and membershipCode.
 
 Response:
+```
 {
   "data": {
     "clientId": "JB0BBQ4aD0UqIThFJwAKBgAXEUkEGQUBBAwdOgABHD4DChwUAB0R",
@@ -66,29 +76,33 @@ Response:
   },
   "message": "Successfully initialized Payment"
 }
+```
 
-From this user gets the required clientId, clientSecret, transactionId and productPrice.
-Regarding productName which is required for payment SDK, as per my project business logic, 
-user picks us membership from a dropdown, and from that Mobile passes the membership code in initiate API.
-From the dropdown, Mobile team have the productName. But if you want to pass custom, the data must be sent from the Backend.
+From this user gets the required clientId, clientSecret, transactionId and productPrice. 
 
-Points to note:
+**Points to note:**
 - Since Esewa is third party server, sometimes they might not be available, backend must either provide dynamic list of available vendor, and in init throw exception if unavailable vendor is used.
 -  Never make Mobile Team to hard code clientId and clientSecret in there code. It must dynamically come from backend. Even backend must not hardcode it in there code, they must either use .env or use database to store.
 - Never make Mobile Team to generate TrasactionId. Because payment is not just about doing the payment, its also about having track of the payment. Sometimes user might have initiated, done payment, but in the middle our server was down, in this case user amount might get deducted but user's transaction for which he/she had done payment in our system might not get done. Storing transaction ID in backend helps customer support to help customers. Also it helps to track hackers, who suddenly become premium user in the system but there is not transaction details in our system. Payment is big deal do not take it easily.
 - If you are calling any third party API to initiate, also save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
 
-User doing the payment
+**User doing the payment**
 From this initiate response, mobile team will open Esewa SDK on Mobile. Esewa SDK will handle all the complex logic needed to do the payment.
-And gives mobile onSuccess and onError callbacks. In onError callbacks, mobile team will show error screen. For better logs, backend can make log API which saves all of the error in MongoDB.
 
-/verify
-onSuccess mobile team assume that from Esewa the payment was done, user money is deducted and is sent to our merchant. But in backend user transaction is still not saved, if user is doing payment to be premium user, in backend user is still not premium user. For this mobile need to call verify API, and in verify API they need to pass refId which Esewa onSuccess.
+SDK gives mobile: onSuccess and onError callbacks. In onError callbacks, mobile team will show error screen. For better logs, backend can make log API which saves all of the error in MongoDB.
 
-Request
+**Verify API**
+onSuccess mobile team assume that from Esewa the payment was done, user money is deducted and is sent to our merchant. 
+
+But in backend user transaction is still not saved, if user is doing payment to be premium user, in backend user is still not premium user. 
+
+For this mobile need to call verify API, and in verify API they need to pass refId which Esewa onSuccess.
+    
+**Request**
+```
 {
   "transactionId": "0ff3c89d-67e1-4e79-a06f-d45e67d6db73",
-  "vendorPaymentId": "refId123123"
+  "vendorPaymentId": "refId123123" //We got this from onSuccess callback on Esewa SDK in Mobile
 }
 
 In request, backend must ask for transactionId which it generated during initiate, and vendorPaymentId. 

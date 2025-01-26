@@ -1,4 +1,4 @@
-### This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API
+### This repository is made to give documentation about how backend should make payment API which are compatible with mobile. This demostration API, video and ReadMe is independent of backend techstack, mobile techstack and from payment vendor used.
 
 ![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
 ![image](https://github.com/user-attachments/assets/f444973b-f0da-47a9-93ea-9b2c6e5c5f51)

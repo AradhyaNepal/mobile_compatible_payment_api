@@ -211,7 +211,7 @@ public class PaymentService {
                     "http:www.uat-connectips.com/success",
                     transaction.getId().toString(),
                     transaction.getAmountInRs(),
-                    "http:www.uat-connectips.com/success"
+                    "http:www.uat-connectips.com/error"
             );
         }
 

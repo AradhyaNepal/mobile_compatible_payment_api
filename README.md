@@ -1,4 +1,4 @@
-This repository is made to give documentation about how backend should make payment API which  are compatible with mobile.
+This repository is made to give documentation about how backend should make payment API which  are compatible with mobile. All the internals in the code is dummy, since the agenda was to demostrate end API.
 
 For this documentation I have used three payment vendor as example; Esewa, Khalti and ConnectIPS.
 Esewa and Khalti are payment vendor which have Mobile SDK available, but ConnectIPS sadly don't have,
@@ -10,7 +10,10 @@ the documentation is independent of these two factors.
 You can also watch my YouTube Video to get better understanding of the Flow:
 Or You can watch this Figma Design:
 
+
 **Scenario 1: Payment SDK Available.**
+Always try to use SDK over showing web on mobile.
+Showing web makes mobile unstable, its like what happens when there is lots of male harmone in inside female body. It causes issues.
 Example used are Esewa and Khalti.
 First read the mobile sdk documentation which ever payment vendor you are integrating.
 
@@ -49,9 +52,45 @@ user picks us membership from a dropdown, and from that Mobile passes the member
 From the dropdown, Mobile team have the productName. But if you want to pass custom, the data must be sent from the Backend.
 
 Points to note:
-- Never make Mobile Team to hard code clientId and clientSecret in there code. It must dynamically come from backend. Even backend must not hardcode it in there code, they must either use .env or use database to store.
+- Since Esewa is third party server, sometimes they might not be available, backend must either provide dynamic list of available vendor, and in init throw exception if unavailable vendor is used.
+-  Never make Mobile Team to hard code clientId and clientSecret in there code. It must dynamically come from backend. Even backend must not hardcode it in there code, they must either use .env or use database to store.
 - Never make Mobile Team to generate TrasactionId. Because payment is not just about doing the payment, its also about having track of the payment. Sometimes user might have initiated, done payment, but in the middle our server was down, in this case user amount might get deducted but user's transaction for which he/she had done payment in our system might not get done. Storing transaction ID in backend helps customer support to help customers. Also it helps to track hackers, who suddenly become premium user in the system but there is not transaction details in our system. Payment is big deal do not take it easily.
 - If you are calling any third party API to initiate, like of Esewa, also save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
+
+User doing the payment
+From this initiate response, mobile team will open Esewa SDK on Mobile. Esewa SDK will handle all the complex logic needed to do the payment.
+And gives mobile onSuccess and onError callbacks. In onError callbacks, mobile team will show error screen. For better logs, backend can make log API which saves all of the error in MongoDB.
+
+/verify
+onSuccess mobile team assume that from Esewa the payment was done, user money is deducted and is sent to our merchant. But in backend user transaction is still not saved, if user is doing payment to be premium user, in backend user is still not premium user. For this mobile need to call verify API, and in verify API they need to pass refId which Esewa onSuccess.
+
+Request
+{
+  "transactionId": "0ff3c89d-67e1-4e79-a06f-d45e67d6db73",
+  "vendorPaymentId": "refId123123"
+}
+
+In request, backend must ask for transactionId which it generated during initiate, and vendorPaymentId. 
+
+Response:
+{
+  "message": "Membership successfully bought"
+}
+Sending back mobile team success status code so that they can show user proper screen.
+
+Point to note:
+- When it comes to data consistency and security backend should never trust frontend team. Backend must do cross check from Esewa server whether the user is fraud or not. For that backend will use the vendorPaymentId(i.e RefId in case of Esewa), and using the secretKey hit the Esewa verify API.
+- If Esewa says success, backend must automatically make user premium, backend must not ask mobile to call an another API to verify from esewa, and another API to make user premium.
+- In entire process Backend must save log of Esewa request and response when they where verifying. Third party API are always prone to change there protocol or send unknown issue, keeping track saves developers sleep when something unexpected happens.
+
+
+
+
+
+
+
+
+
 
   
 

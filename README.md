@@ -1,4 +1,6 @@
-### This repository is made to give documentation about how backend should make payment API which are compatible with mobile. This demostration API, video and ReadMe is independent of backend techstack, mobile techstack and from payment vendor used.
+### This repository is made to give documentation about how backend should make payment API which are compatible with mobile. 
+
+### This demostration API, video and ReadMe is independent of backend techstack, mobile techstack and from payment vendor used.
 
 ![image](https://github.com/user-attachments/assets/33118b4c-2409-4e80-9c69-2ec7af49568a)
 ![image](https://github.com/user-attachments/assets/f444973b-f0da-47a9-93ea-9b2c6e5c5f51)
@@ -31,8 +33,9 @@ Although the demo payment vendor are only Nepal available vendors, and the backe
 **the documentation is independent of backend and of which vendor you are using.**
 
 ### Youtubes and Figmas
-You can also watch my YouTube Video to get better understanding of the Flow:
-Or You can watch this Figma Design:
+You can also watch my YouTube Video to get better understanding of the Flow: (YouTube)[https://youtu.be/u1_ZjulSx-w]
+
+Or You can watch this Figma Design: (Figma)[https://www.figma.com/design/P99aIfSQetM3a7ZjtcH20O/MyPersonal?node-id=2-1261&t=fOTkI1MrPcUb0haR-1]
 
 ### Scenario 1: Mobile SDK Available.
 Always try to use SDK over showing web on mobile.
@@ -41,10 +44,13 @@ Showing web makes mobile unstable, its like what happens when there is lots of m
 
 In Esewa and Khalti there are payment Vendor available, Scenario 1 explains what to do in these scenario.
 
-What to do is simple: **Read the mobile sdk documentation about which payment vendor you are integrating,
-do not read web documentation for Mobile, because mobile is not web.**
+What to do is simple:
 
-**Esewa**
+**Read the mobile sdk documentation about which payment vendor you are integrating,***
+
+**Do not read web documentation for Mobile, because mobile is not web.**
+
+#### Esewa
 For Esewa, mobile needs clientId, clientSecretId, productId, productName and productPrice.
 
 You can watch it in this documentation [Esewa Offical Docs](https://developer.esewa.com.np/pages/Flutter#overview)
@@ -104,45 +110,58 @@ For this mobile need to call verify API, and in verify API they need to pass ref
   "transactionId": "0ff3c89d-67e1-4e79-a06f-d45e67d6db73",
   "vendorPaymentId": "refId123123" //We got this from onSuccess callback on Esewa SDK in Mobile
 }
+```
 
 In request, backend must ask for transactionId which it generated during initiate, and vendorPaymentId. 
 
-Response:
+**Response**
+```
 {
   "message": "Membership successfully bought"
 }
+```
 Sending back mobile team success status code so that they can show user proper screen.
 
-Point to note:
+**Point to note:**
 - When it comes to data consistency and security backend should never trust frontend team. Backend must do cross check from Esewa server whether the user is fraud or not. For that backend will use the vendorPaymentId(i.e RefId in case of Esewa), and using the secretKey hit the Esewa verify API.
 - If Esewa says success, backend must automatically make user premium, backend must not ask mobile to call an another API to verify from esewa, and another API to make user premium.
 - In entire process Backend must save log of Esewa request and response when they where verifying. Third party API are always prone to change there protocol or send unknown issue, keeping track saves developers sleep when something unexpected happens.
 
-**Khalti**
+#### Khalti
 Khalti is also payment vendor which provides mobile SDK. Just few difference for developers to know is the pidx, 
-which is a unique id needed for mobile SDK. But this id must be generated in initiate API, where backend need to call
+which is a unique id needed for mobile SDK. 
+
+But this id must be generated in initiate API, where backend need to call
 Khalti API whose compulsory fields are: return_url, website_url, amount, purchase_order_id and purchase_order_name.
+
 For return_url, backend must create a static web template which is made of HTML and hosted on backend's specific web url,
 or they must ask web developers to make a url.
 
 purchase_order_id is unique transaction id in our system.
-In response you will receive pidx.
+
+After backend calls initiate API, In response you will receive pidx.
+```
  {
         "pidx": "bZQLD9wRVWo4CdESSfuSsB",
         "payment_url": "https://test-pay.khalti.com/?pidx=bZQLD9wRVWo4CdESSfuSsB",
         "expires_at": "2023-05-25T16:26:16.471649+05:45",
         "expires_in": 1800
   }
+```
 
-  For better up to date documentation read https://docs.khalti.com/khalti-epayment/
+For better up to date documentation read https://docs.khalti.com/khalti-epayment/
 
 Coming back to API which mobile SDK consume first is initiate,
-Request
+
+**Request**
+```
 {
   "paymentVendor": "khalti",
   "membershipCode": "uni"
 }
-Response:
+```
+**Response:**
+```
 {
   "data": {
     "pidx": "bZQLD9wRVWo4CdESSfuSsB",
@@ -152,42 +171,56 @@ Response:
   },
   "message": "Successfully initialized Payment"
 }
+```
 
 Khalti SDK needs pidx and public Key to initiate the payment in Khalti SDK.
+
 In my flow Mobile needs to save transactionId so that they can use it when they are verifying,
 thats why I am sending it even Khalti SDK don't require it. Since we have passed PIDX, internally Khalti SDK can fetch the transactionId.
 
+**Point to note:**
 - Since you are calling third party API to initiate, save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
 
-verify/
+**Verify**
 Everything same as esewa, Mobile will call verify once everything is done. And in backend you will do cross check, make user premium; 
 and save log of third party verify request and response for future ease if unexpected happens.
-Request
+
+**Request**
+```
 {
   "transactionId": "8a367c31-1bc2-4b86-8a0b-e7d3ebc40d81",
   "vendorPaymentId": "bZQLD9wRVWo4CdESSfuSsB"
 }
-Response:
+```
+
+**Response**:
+```
 {
   "message": "Membership successfully bought"
 }
+```
 
-ConnectIPS:
+### Scenario 2: Sadly no Mobile SDK Available, need to use Web.
+#### ConnectIPS:
 ConnectIPS is a payment vendor which have provided no Mobile SDK, and it is really sad, it makes mobile unstable because for this payment vendor we need to show web content inside mobile.
+
 In scenarios like this Mobile developer always fight to get API where:
 1) Backend provides an HTML content, or an url. This content needs to be opened in integrated web browser inside users mobile app, so backend provided content must have enough javascript which handles all the payment business logic. If backend is asking mobile to do any extra logics, reject it.
 2) The problem with opening integrated web browser inside users mobile app is that app will loose control over the user's navigation, user can watch Youtube, Facebook on the website after payment get completed and never comes back. So backend must provide successUrl and failureUrl so that Mobile will know then if user gets redirected to this url in the web then it means the task of opening web is completed and now mobile need to close the web and get its control back.
 
-
-
 With this rule in mind here:
-Initiate
-Request:
+
+**Initiate**
+**Request:**
+```
 {
   "paymentVendor": "connectIPS",
   "membershipCode": "uni"
 }
-Response:
+```
+
+**Response:**
+```
 {
   "data": {
     "paymentWebHTML": "HTML content with enough javascript so that mobile team task is just to render this HTML inside mobile and listen for successURL and errorURL. No business logic in Mobile.",
@@ -198,17 +231,26 @@ Response:
   },
   "message": "Successfully initialized Payment"
 }
-
+```
 Once the mobile catches that user is being navigated to successURL, they will extract the params of connectIPS transaction ID from the successURL to which connectIPS redirect and then they will hit the verify API to save the transaction done information in our server. Same like Esewa and Khalti Backend must do cross check, save logs of third party verify request-response, and make user premium.
-Request:
+
+**Request:**
+```
 {
   "transactionId": "57aa3d9c-7028-4b55-b85a-6cdc47eaa314",
   "vendorPaymentId": "230948230948"
 }
-Response:
+```
+**Response:**
+```
 {
   "message": "Membership successfully bought"
 }
+```
+
+Thanks for reading upto here, if you like my documentation, you can give this repo and star, or share this repo which your team who might get benefit from my content.
+
+If you find some issues on my concepts, my docs, my code, or my YouTube you can create an issue in this GitHub repo.
 
 
 

@@ -56,6 +56,7 @@ For Esewa, mobile needs clientId, clientSecretId, productId, productName and pro
 You can watch it in this documentation [Esewa Offical Docs](https://developer.esewa.com.np/pages/Flutter#overview)
 
 **Initially there is initiate API:**
+
 Request:
 ```
 {
@@ -92,19 +93,21 @@ From this user gets the required clientId, clientSecret, transactionId and produ
 - Never make Mobile Team to generate TrasactionId. Because payment is not just about doing the payment, its also about having track of the payment. Sometimes user might have initiated, done payment, but in the middle our server was down, in this case user amount might get deducted but user's transaction for which he/she had done payment in our system might not get done. Storing transaction ID in backend helps customer support to help customers. Also it helps to track hackers, who suddenly become premium user in the system but there is not transaction details in our system. Payment is big deal do not take it easily.
 - If you are calling any third party API to initiate, also save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
 
-**User doing the payment**
+**User doing the payment:**
+
 From this initiate response, mobile team will open Esewa SDK on Mobile. Esewa SDK will handle all the complex logic needed to do the payment.
 
 SDK gives mobile: onSuccess and onError callbacks. In onError callbacks, mobile team will show error screen. For better logs, backend can make log API which saves all of the error in MongoDB.
 
-**Verify API**
+**Verify API:**
+
 onSuccess mobile team assume that from Esewa the payment was done, user money is deducted and is sent to our merchant. 
 
 But in backend user transaction is still not saved, if user is doing payment to be premium user, in backend user is still not premium user. 
 
 For this mobile need to call verify API, and in verify API they need to pass refId which Esewa onSuccess.
     
-**Request**
+Request:
 ```
 {
   "transactionId": "0ff3c89d-67e1-4e79-a06f-d45e67d6db73",
@@ -114,7 +117,7 @@ For this mobile need to call verify API, and in verify API they need to pass ref
 
 In request, backend must ask for transactionId which it generated during initiate, and vendorPaymentId. 
 
-**Response**
+Response:
 ```
 {
   "message": "Membership successfully bought"
@@ -153,14 +156,14 @@ For better up to date documentation read https://docs.khalti.com/khalti-epayment
 
 Coming back to API which mobile SDK consume first is initiate,
 
-**Request**
+Request:
 ```
 {
   "paymentVendor": "khalti",
   "membershipCode": "uni"
 }
 ```
-**Response:**
+Response:
 ```
 {
   "data": {
@@ -179,13 +182,15 @@ In my flow Mobile needs to save transactionId so that they can use it when they 
 thats why I am sending it even Khalti SDK don't require it. Since we have passed PIDX, internally Khalti SDK can fetch the transactionId.
 
 **Point to note:**
+
 - Since you are calling third party API to initiate, save the initiateRequest and initiateResponse as log, it helps to keep good track. In features like payment do not be greedy of storage the logs take.
 
-**Verify**
+**Verify:**
+
 Everything same as esewa, Mobile will call verify once everything is done. And in backend you will do cross check, make user premium; 
 and save log of third party verify request and response for future ease if unexpected happens.
 
-**Request**
+Request:
 ```
 {
   "transactionId": "8a367c31-1bc2-4b86-8a0b-e7d3ebc40d81",
@@ -193,7 +198,7 @@ and save log of third party verify request and response for future ease if unexp
 }
 ```
 
-**Response**:
+Response:
 ```
 {
   "message": "Membership successfully bought"
@@ -211,7 +216,8 @@ In scenarios like this Mobile developer always fight to get API where:
 With this rule in mind here:
 
 **Initiate**
-**Request:**
+
+Request:
 ```
 {
   "paymentVendor": "connectIPS",
@@ -219,7 +225,7 @@ With this rule in mind here:
 }
 ```
 
-**Response:**
+Response:
 ```
 {
   "data": {
@@ -234,14 +240,14 @@ With this rule in mind here:
 ```
 Once the mobile catches that user is being navigated to successURL, they will extract the params of connectIPS transaction ID from the successURL to which connectIPS redirect and then they will hit the verify API to save the transaction done information in our server. Same like Esewa and Khalti Backend must do cross check, save logs of third party verify request-response, and make user premium.
 
-**Request:**
+Request:
 ```
 {
   "transactionId": "57aa3d9c-7028-4b55-b85a-6cdc47eaa314",
   "vendorPaymentId": "230948230948"
 }
 ```
-**Response:**
+Response:
 ```
 {
   "message": "Membership successfully bought"

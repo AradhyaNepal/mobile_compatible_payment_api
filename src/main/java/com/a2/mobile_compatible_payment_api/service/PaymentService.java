@@ -39,9 +39,9 @@ public class PaymentService {
         if (dummyUser.isEmpty()) {
             throw new CustomException(StringConstant.noUserFound);
         }
-        var dummyUserGet=dummyUser.get();
-        if(dummyUserGet.isPremium()){
-            throw  new CustomException(StringConstant.userAlreadyPremium);
+        var dummyUserGet = dummyUser.get();
+        if (dummyUserGet.isPremium()) {
+            throw new CustomException(StringConstant.userAlreadyPremium);
         }
 
         var defaultMerchant = merchantKeysRepository.getDefaultMerchant();
@@ -118,7 +118,101 @@ public class PaymentService {
             );
 
         } else {
-            throw new CustomException("Not implemented yet");
+            var transaction = transactionRepository.save(transactionT);
+            return new ConnectIPSInitializeResponse(
+                    "<!DOCTYPE html>\n" +
+                            "<html lang=\"en\">\n" +
+                            "<head>\n" +
+                            "    <meta charset=\"UTF-8\">\n" +
+                            "    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n" +
+                            "    <title>Dummy Payment Page</title>\n" +
+                            "    <style>\n" +
+                            "        body {\n" +
+                            "            font-family: Arial, sans-serif;\n" +
+                            "            background-color: #f4f4f9;\n" +
+                            "            display: flex;\n" +
+                            "            justify-content: center;\n" +
+                            "            align-items: center;\n" +
+                            "            height: 100vh;\n" +
+                            "            margin: 0;\n" +
+                            "        }\n" +
+                            "        .payment-container {\n" +
+                            "            background: #fff;\n" +
+                            "            padding: 20px;\n" +
+                            "            border-radius: 10px;\n" +
+                            "            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n" +
+                            "            width: 100%;\n" +
+                            "            max-width: 400px;\n" +
+                            "        }\n" +
+                            "        .payment-container h2 {\n" +
+                            "            text-align: center;\n" +
+                            "            margin-bottom: 20px;\n" +
+                            "        }\n" +
+                            "        .form-group {\n" +
+                            "            margin-bottom: 15px;\n" +
+                            "        }\n" +
+                            "        .form-group label {\n" +
+                            "            display: block;\n" +
+                            "            margin-bottom: 5px;\n" +
+                            "            font-weight: bold;\n" +
+                            "        }\n" +
+                            "        .form-group input {\n" +
+                            "            width: 100%;\n" +
+                            "            padding: 10px;\n" +
+                            "            border: 1px solid #ccc;\n" +
+                            "            border-radius: 5px;\n" +
+                            "            font-size: 14px;\n" +
+                            "        }\n" +
+                            "        .form-group input:focus {\n" +
+                            "            border-color: #007bff;\n" +
+                            "            outline: none;\n" +
+                            "            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);\n" +
+                            "        }\n" +
+                            "        .submit-button {\n" +
+                            "            width: 100%;\n" +
+                            "            padding: 10px;\n" +
+                            "            background-color: #007bff;\n" +
+                            "            color: #fff;\n" +
+                            "            border: none;\n" +
+                            "            border-radius: 5px;\n" +
+                            "            font-size: 16px;\n" +
+                            "            cursor: pointer;\n" +
+                            "        }\n" +
+                            "        .submit-button:hover {\n" +
+                            "            background-color: #0056b3;\n" +
+                            "        }\n" +
+                            "    </style>\n" +
+                            "</head>\n" +
+                            "<body>\n" +
+                            "    <div class=\"payment-container\">\n" +
+                            "        <h2>Payment Page</h2>\n" +
+                            "        <form action=\"/submit-payment\" method=\"POST\">\n" +
+                            "            <div class=\"form-group\">\n" +
+                            "                <label for=\"card-number\">Card Number</label>\n" +
+                            "                <input type=\"text\" id=\"card-number\" name=\"card-number\" placeholder=\"1234 5678 9012 3456\" required>\n" +
+                            "            </div>\n" +
+                            "            <div class=\"form-group\">\n" +
+                            "                <label for=\"expiry-date\">Expiration Date</label>\n" +
+                            "                <input type=\"month\" id=\"expiry-date\" name=\"expiry-date\" required>\n" +
+                            "            </div>\n" +
+                            "            <div class=\"form-group\">\n" +
+                            "                <label for=\"cvv\">CVV</label>\n" +
+                            "                <input type=\"password\" id=\"cvv\" name=\"cvv\" placeholder=\"123\" maxlength=\"3\" required>\n" +
+                            "            </div>\n" +
+                            "            <div class=\"form-group\">\n" +
+                            "                <label for=\"amount\">Amount</label>\n" +
+                            "                <input type=\"number\" id=\"amount\" name=\"amount\" placeholder=\"Enter amount\" required>\n" +
+                            "            </div>\n" +
+                            "            <button type=\"submit\" class=\"submit-button\">Pay Now</button>\n" +
+                            "        </form>\n" +
+                            "    </div>\n" +
+                            "</body>\n" +
+                            "</html>\n",
+                    "http:www.uat-connectips.com/success",
+                    transaction.getId().toString(),
+                    transaction.getAmountInRs(),
+                    "http:www.uat-connectips.com/success"
+            );
         }
 
 
@@ -163,6 +257,10 @@ public class PaymentService {
                     "   \"fee\": 0,\n" +
                     "   \"refunded\": false\n" +
                     "}");
+        } else {
+            transactionGet.setVendorVerifyRequest("jflkdsjf");
+            transactionGet.setVendorVerifyResponse("aksjdfjalsdkf");
+
         }
         transactionGet.setPaymentStatus(PaymentStatus.success);
         transactionGet.setVerifiedDate(Instant.now());
